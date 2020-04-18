@@ -58,17 +58,22 @@ app.post('/login', (req, res, next) => {
   //
   models.Users.get(req.body).then(
     (result) => {
-      //console.log(result, 'RIGHT HURRRR');
-      console.log('RIGHT HURRRRRRRRRRRRR', req.body, req.body.password);
-      // having trouble accessing info on this object... is it JSON???????????
-      if (models.Users.compare(req.body.password, result.password, result.salt)) {
 
+      // console.log('RIGHT HURRRRRRRRRRRRR', req.body, req.body.password, models.Users.compare(req.body.password, result.password, result.salt), result);
+
+      if (result === undefined) {
+        res.redirect('/login');
+        res.sendStatus(400);
+      }
+
+      if (models.Users.compare(req.body.password, result.password, result.salt)) {
         res.redirect('/');
         res.sendStatus(201);
       } else {
         res.redirect('/login');
-        res.sendStatus(405);
+        res.sendStatus(400);
       }
+
     });
 
 });
