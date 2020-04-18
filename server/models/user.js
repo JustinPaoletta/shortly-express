@@ -23,6 +23,15 @@ class Users extends Model {
     return utils.compareHash(attempted, password, salt);
   }
 
+  get({username, password}) {
+    // MODEL IS HOLDING THE MAIN METHODS AND WE CAN CALL THEM HERE PASSING IN THE VALUES WE WANT
+    return super.get.call(this, {username});
+    // vvvvv SUPER vvvvv
+    // let parsedOptions = parseData(options);
+    // let queryString = `SELECT * FROM ${this.tablename} WHERE ${parsedOptions.string.join(' AND ')} LIMIT 1`;
+    // return executeQuery(queryString, parsedOptions.values).then(results => results[0]);
+  }
+
   /**
    * Creates a new user record with the given username and password.
    * This method creates a salt and hashes the password before storing
