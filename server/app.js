@@ -16,7 +16,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '../public')));
 
 
-
 app.get('/',
   (req, res) => {
     res.render('index');
@@ -58,9 +57,6 @@ app.post('/login', (req, res, next) => {
   //
   models.Users.get(req.body).then(
     (result) => {
-
-      // console.log('RIGHT HURRRRRRRRRRRRR', req.body, req.body.password, models.Users.compare(req.body.password, result.password, result.salt), result);
-
       if (result === undefined) {
         res.redirect('/login');
         res.sendStatus(400);
