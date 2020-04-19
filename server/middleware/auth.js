@@ -3,20 +3,46 @@ const Promise = require('bluebird');
 
 module.exports.createSession = (req, res, next) => {
 
-  if (Object.keys(req.cookies).length === 0) {
-    models.Sessions.create().then(
-      (result) => {
-        // console.log(result);
-        return models.Sessions.get(result.insertId);
+  // check for session cookie
+  Promise.resolve(req.cookies.shortlyid)
+    .then((hash) => {
+      // hash is shortlyid cookie
+      //console.log(hash);
+      if (!hash) {
+        // throw to catch and make session
+        throw hash;
       }
-    ).then(
-      (results) => {
-        console.log(results, 'HEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE');
-        req.session = results;
-        res.sendStatus(200);
+      // if hash (shortlyid) exists try to get it from db
+      return models.Sessions.get({hash});
+    })
+    .tap((session) => {
+      if (!session) {
+        // throw to catch and make session
+        throw session;
       }
-    ).then(next());
-  }
+      // if we were successful return the session
+      //return session;
+    })
+    .catch(() => {
+    // make a session and insert into db
+      return models.Sessions.create()
+        .then(results => {
+          // get session from db
+          return models.Sessions.get({id: results.insertId});
+        })
+        .tap(session => {
+          // res.cookie is a func that sets a cookie to be sent with response
+          res.cookie('shortlyid', session.hash);
+          //return session;
+        });
+      //next();
+    })
+    .then((session) => {
+      // finally set session on req object
+      req.session = session;
+      // make sure to call next
+      next();
+    });
 
 };
 

@@ -38,16 +38,30 @@ app.get('/links',
   });
 
 app.post('/signup', (req, res, next) => {
-  models.Users.get(req.body).then(
-    (result) => {
-      if (result) {
-        res.redirect('/signup');
-        res.sendStatus(301);
-      } else {
-        models.Users.create(req.body);
-        res.redirect('/');
-        res.sendStatus(201);
+
+  var username = req.body.username;
+  var password = req.body.password;
+
+  return models.Users.get({username})
+    .then((user) => {
+      if (user) {
+        throw user;
+        // res.redirect('/');
       }
+      return models.Users.create({username, password});
+    })
+    // .then( results => {
+    //   return models.Sessions.update({hash: req.session.hash}, {userId: results.insertId});
+    // })
+    .then((results) => {
+      console.log('ksjaldhfjadshfhasdl');
+      res.redirect('/');
+    })
+    // .error(error => {
+    //   res.status(500).send(error);
+    // })
+    .catch(user => {
+      res.redirect('/signup');
     });
 });
 

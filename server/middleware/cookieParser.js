@@ -14,6 +14,7 @@ const parseCookies = (req, res, next) => {
       //console.log(req.headers.cookie);
     }
     req.cookies = cookieObject;
+    console.log(req.cookies);
     next();
   }
 };
